@@ -1,0 +1,658 @@
+Option Explicit
+Option Base 1
+
+Sub F2()
+    'by Keith Knowles 12/10/2013
+    
+    '*********declarations **********************
+    Dim msg As String
+    msg = ""
+    Dim rMsg As String
+    rMsg = ""
+    Dim bdrElement As CellElement
+    Dim T_BorderIgnore As Boolean
+    T_BorderIgnore = False 'True puts fence around T borders - needed for final prints
+    Dim BorderExists As Boolean
+    BorderExists = True  'assume a border exists
+    Dim FenceGood As Boolean
+    Dim YellowAlert As Boolean
+    YellowAlert = False
+    Dim RedAlert As Boolean
+    RedAlert = False  'set once up here and maybe tripped by one or more routines to true
+    Dim varTestString As Variant
+    Dim ScaledDwgFlag As Boolean
+    ScaledDwgFlag = False
+    '**********end of declarations ***********************
+    
+    
+    '******* Get Getborder and DrawFence *********
+    Set bdrElement = GetBorder(T_BorderIgnore, BorderExists)
+    'if no border then skip over DrawFence
+        If BorderExists = True Then
+            'find out if border is a scaled border
+            varTestString = InStr(1, bdrElement.Name, "10", vbTextCompare)
+            If varTestString = 0 Then
+                'do nothing
+              Else
+                'scaled dwg - set scaledDwgFlag to true
+                 ScaledDwgFlag = True
+             End If
+                     
+            'draw the fence
+             
+             FenceGood = DrawFence(bdrElement, msg)
+             rMsg = rMsg & msg
+                If FenceGood = True Then
+                  'do nothing
+                End If
+          Else
+            'do nothing
+             rMsg = rMsg & "No valid border! FENCE NOT DRAWN! "
+             YellowAlert = True
+         End If
+   '******* End of Getborder and DrawFence *********
+   
+    
+   '*******Zoom into the Title Block Area*********
+     If FenceGood = True Then
+         GetRange  'zoom into Title Block Area
+       Else
+         'do nothing - no Border means that it is not possible
+         'to zoom into a title block area - this may be the case with
+         'drawings that are only raster
+     End If
+    '******End of Zoom ******************************
+    
+     
+    '********Check Color Table**************************
+      msg = ""
+      msg = ColorTable_01.ColorTbl
+      
+      If msg <> "" Then
+             rMsg = rMsg & " Color Table Error! "
+            RedAlert = True
+      End If
+    '*******End of Color Table************************
+    
+    
+    '******Check for Levels***************************
+     msg = ""
+     msg = Levels.CheckLevels()
+     If msg = "" Then
+        'do nothing levels are fine
+        Else
+         rMsg = rMsg & msg
+     End If
+    '*******END OF  Check for Levels*********************
+    
+    
+    
+    '***********raster attached? ************************
+    msg = ""
+    msg = RasterAttached
+    rMsg = rMsg & msg
+    '**********end of raster check ****************
+    
+    
+    '**********Scan for Dimensions******************
+    'explode dimensions with "Graphic Group" ON so that
+    'dim values do not change when the working resolution
+    'is changed
+      If ScaledDwgFlag = False Then
+        'only check for Dimensions in Scaled dwgs
+        msg = ""
+        msg = ScanForDims
+        rMsg = rMsg & msg
+      End If
+    '*************end of Scan for Dimensions*************
+    
+    
+    '************fit view 5 to extents*****************
+    If ActiveDesignFile.Views(5).IsOpen Then
+        CadInputQueue.SendCommand "FIT VIEW EXTENDED 5"
+      Else
+        rMsg = rMsg & "FIX VIEW 5!"
+    End If
+    '***********end of fit view 5 to extents************
+    
+     'reset command to selection
+     CadInputQueue.SendCommand "CHOOSE ELEMENT"
+     CommandState.StartDefaultCommand
+    
+         
+    '************SHOW ISSUES TO USERS******************
+    'priority 10 red, 11 yellow, 12 info, 14 none
+     
+     
+    If rMsg = "" Then
+       'do nothing no errors occurred
+       'Set lock settings: Snap on, Unit on, Graphic Group on, Axis lock off, Grid lock off
+        FileAttributeSettings
+        
+        ShowTempMessage msdStatusBarAreaLeft, "GOOD!"
+        ShowTempMessage Area:=msdStatusBarAreaMiddle, MESSAGE:="DRAWING CHECKS OK!"
+        Exit Sub
+    End If
+    
+
+    
+    If rMsg <> "" Then
+      
+
+             
+             If RedAlert = True Then
+                   ShowTempMessage msdStatusBarAreaLeft, "ERRORS!"
+                   ShowTempMessage Area:=msdStatusBarAreaMiddle, MESSAGE:=rMsg
+                   MessageCenter.AddMessage MESSAGE:=rMsg, Priority:=10, openalertdialog:=False
+                   Exit Sub
+             End If
+            
+                  ShowTempMessage msdStatusBarAreaLeft, "ERRORS!"
+                  ShowTempMessage Area:=msdStatusBarAreaMiddle, MESSAGE:=rMsg
+                  MessageCenter.AddMessage MESSAGE:=rMsg, Priority:=11, openalertdialog:=False
+           
+     End If
+
+End Sub
+Function DrawFence(BDR As CellElement, retMsg As String) As Boolean
+     Dim delta_Y As Variant
+     Dim delta_X As Variant
+     Dim D12_Ratio As Double
+     D12_Ratio = 1.54545454545455
+     Const E12_Ratio As Double = 1.4
+     Dim FortyTwo As Variant
+     FortyTwo = 42#
+     Dim ThirtyFour As Variant
+     ThirtyFour = 34#
+     Dim curElem As Element
+     Dim lngScaleX As Double
+     Dim lngScaleY As Double
+     
+     DrawFence = True       'predict success
+     retMsg = ""            'predict success
+     
+        'BDR.Origin.x
+     Dim pts(1 To 4) As Point3d
+        
+        'non-scaled drawings
+      If BDR.Name = "BDR-D10" Then
+      
+         'lngScaleX = BDR.Scale.x
+         'lngScaleY = BDR.Scale.Y
+        'activesettings.TextStyle.Height
+          
+     'MsgBox ActiveSettings.TextStyle.Height
+     'ActiveSettings.TextStyle.Height = 0.2
+     'ActiveSettings.TextStyle.Width = 0.2
+     'MsgBox ActiveSettings.TextStyle.Height
+     'ActiveSettings.TextStyle.Height = 0.533854
+     'ActiveSettings.TextStyle.Width = 0.533854
+     'MsgBox ActiveSettings.TextStyle.Height
+ 
+        
+        pts(1).x = BDR.Range.Low.x
+        pts(1).Y = BDR.Range.Low.Y
+        pts(2).x = BDR.Range.Low.x + ThirtyFour
+        pts(2).Y = BDR.Range.Low.Y
+        pts(3).x = BDR.Range.Low.x + ThirtyFour
+        pts(3).Y = BDR.Range.High.Y
+        pts(4).x = BDR.Range.Low.x
+        pts(4).Y = BDR.Range.High.Y
+        
+       ElseIf BDR.Name = "BDR-E10" Then
+        pts(1).x = BDR.Range.Low.x
+        pts(1).Y = BDR.Range.Low.Y
+        pts(2).x = BDR.Range.Low.x + FortyTwo
+        pts(2).Y = BDR.Range.Low.Y
+        pts(3).x = BDR.Range.Low.x + FortyTwo
+        pts(3).Y = BDR.Range.High.Y
+        pts(4).x = BDR.Range.Low.x
+        pts(4).Y = BDR.Range.High.Y
+       
+       
+       ElseIf BDR.Name = "BDR-T10" Or BDR.Name = "BDR-T12" Then
+        pts(1).x = BDR.Range.Low.x
+        pts(1).Y = BDR.Range.Low.Y
+        pts(2).x = BDR.Range.High.x
+        pts(2).Y = BDR.Range.Low.Y
+        pts(3).x = BDR.Range.High.x
+        pts(3).Y = BDR.Range.High.Y
+        pts(4).x = BDR.Range.Low.x
+        pts(4).Y = BDR.Range.High.Y
+        
+        'scaled drawings
+       ElseIf BDR.Name = "BDR-D12" Then
+        delta_Y = BDR.Range.High.Y - BDR.Range.Low.Y
+        'deduce delta_X by  Ratio 17/11
+        delta_X = D12_Ratio * delta_Y
+        pts(1).x = BDR.Range.Low.x
+        pts(1).Y = BDR.Range.Low.Y
+        pts(2).x = BDR.Range.Low.x + delta_X
+        pts(2).Y = BDR.Range.Low.Y
+        pts(3).x = BDR.Range.Low.x + delta_X
+        pts(3).Y = BDR.Range.High.Y
+        pts(4).x = BDR.Range.Low.x
+        pts(4).Y = BDR.Range.High.Y
+        
+       ElseIf BDR.Name = "BDR-E12" Then
+        delta_Y = BDR.Range.High.Y - BDR.Range.Low.Y
+        'deduce delta_X by ratio 14/10
+        delta_X = E12_Ratio * delta_Y
+        pts(1).x = BDR.Range.Low.x
+        pts(1).Y = BDR.Range.Low.Y
+        pts(2).x = BDR.Range.Low.x + delta_X
+        pts(2).Y = BDR.Range.Low.Y
+        pts(3).x = BDR.Range.Low.x + delta_X
+        pts(3).Y = BDR.Range.High.Y
+        pts(4).x = BDR.Range.Low.x
+        pts(4).Y = BDR.Range.High.Y
+       Else
+         'Big Problem -- no border to draw a fence around
+         retMsg = "No Border Found!"
+         DrawFence = False
+         Exit Function
+     End If
+              
+    ' Create the fence
+    With ActiveDesignFile.Fence
+       .DefineFromModelPoints 1, pts()
+       .Draw msdDrawingModeHilite
+    End With
+    
+    If BDR.Range.Low.x >= 0.1 Or BDR.Range.Low.Y >= 0.1 Then
+    'If BDR.Range.Low.x <> 0 Or BDR.Range.Low.Y <> 0 Then
+    
+      retMsg = "BORDER OFF 0,0! "
+    End If
+    
+End Function
+Function GetBorder(ignoreT As Boolean, BorderExist As Boolean) As Element
+
+  Dim number As Double
+  
+  
+  Dim rngBDR As Range3d
+  Dim pntBDRs As Point3d
+  Dim pntBDRe As Point3d
+  Dim rngTBDR As Range3d
+  Dim pntTBDRs As Point3d
+  Dim pntTBDRe As Point3d
+  Dim dblScale As Double
+  
+  Dim BorderName As String
+  Dim oElem As Element
+  Dim oCellElem As CellElement
+  Dim BdrObject As CellElement
+  Dim TbdrObject As CellElement
+  Dim oEnum As ElementEnumerator
+  Dim ElementCounter As Long
+  Dim BorderType As String
+  
+  Dim BorderD10 As Boolean
+  Dim BorderE10 As Boolean
+  Dim BorderT10 As Boolean
+  
+  Dim BorderD12 As Boolean
+  Dim BorderE12 As Boolean
+  Dim BorderT12 As Boolean
+  
+  BorderD10 = False
+  BorderE10 = False
+  BorderT10 = False
+  BorderD12 = False
+  BorderE12 = False
+  BorderT12 = False
+  
+  Set oEnum = ActiveModelReference.Scan()
+
+  While oEnum.MoveNext
+        ElementCounter = ElementCounter + 1
+        Set oElem = oEnum.Current
+    
+        If oElem.IsCellElement Then
+          Set oCellElem = oElem
+          
+          Select Case oCellElem.Name
+            Case "BDR-D10"
+              'MsgBox "D10"
+              Set BdrObject = oCellElem
+              BorderD10 = True
+            Case "BDR-D12"
+              'MsgBox "D12"
+              Set BdrObject = oCellElem
+              BorderD12 = True
+            Case "BDR-E10"
+              'MsgBox "E10"
+              Set BdrObject = oCellElem
+              BorderE10 = True
+            Case "BDR-E12"
+              'MsgBox "E12"
+              Set BdrObject = oCellElem
+              BorderE12 = True
+            Case "BDR-T10"
+              'MsgBox "T10"
+              Set TbdrObject = oCellElem
+              BorderT10 = True
+            Case "BDR-T12"
+              'MsgBox "T12"
+              Set TbdrObject = oCellElem
+              BorderT12 = True
+            Case Else
+              'No border found - send by reference this value to avoid error
+              BorderExist = False
+           End Select
+        End If
+   Wend
+   
+   If ignoreT = True Then
+     'MsgBox "ignore T"
+       If BorderE10 Or BorderD10 Or BorderD12 Or BorderE12 Then
+          Set GetBorder = BdrObject
+          BorderExist = True
+          Exit Function
+         Else
+          MsgBox "No D or E Borders in this file"
+       End If
+   End If
+   
+   If ignoreT = False Then
+       If BorderT10 Or BorderT12 Then
+          BorderExist = True
+          Set GetBorder = TbdrObject
+          'MsgBox "T border takes priority"
+         ElseIf BorderE10 Or BorderD10 Or BorderD12 Or BorderE12 Then
+          BorderExist = True
+          Set GetBorder = BdrObject
+          Exit Function
+         Else
+          MsgBox "No D or E Borders in this file"
+       End If
+   End If
+End Function
+
+Function RasterAttached() As String
+
+  Dim RtrnMsg As String
+  Dim RasterFullName As String
+  Dim RasterPath As String
+  Dim DesignFileName As String
+  Dim DesignFilePath As String
+  Dim Icount As Integer
+  Dim intAttachCount As Integer
+  
+  Dim strAttachName As String
+  Dim strAttachPath As String
+
+  Dim strFilename As String
+  Dim strFilepath As String
+  
+  Dim currentFile As DesignFile
+  Set currentFile = Application.ActiveDesignFile
+  
+  strFilename = currentFile.Name
+  strFilepath = currentFile.path
+  
+  Dim RasterCount As Integer
+        'gets the name of the first attached raster and the number of rasters attached
+        'need full path since raster could be in another folder
+   Dim att As Rasters
+   Set att = Application.RasterManager.Rasters
+        'are there any attachments
+        
+   If att.count = 0 Then
+         RasterAttached = ""
+         Exit Function
+      Else
+         strAttachPath = att.Item(1).RasterInformation.path
+         strAttachName = att.Item(1).RasterInformation.FullName
+   End If
+   
+  RtrnMsg = ""  'keep track of all issues
+  'Test Path Name
+        If StrComp(strAttachPath, strFilepath, vbTextCompare) = 0 Then
+            'path match
+          Else
+            RtrnMsg = "Raster Path Different! " & vbLf
+        End If
+   
+  'Test File Name
+        'take of .cit and .dgn filename
+        strAttachName = Left(strAttachName, Len(strAttachName) - 4)
+        strFilename = Left(strFilename, Len(strFilename) - 4)
+        If StrComp(strAttachName, strFilename, vbTextCompare) = 0 Then
+             'name match
+          Else
+             RtrnMsg = RtrnMsg & "File and Raster Names are Different! " & vbLf
+        End If
+            
+  'Test for too many rasters attached
+        If att.count >= 2 Then
+        RtrnMsg = RtrnMsg & "Too many Rasters!"
+        End If
+        
+   RasterAttached = RtrnMsg
+   
+End Function
+
+Sub test_RasterAttached()
+   Dim msg As String
+   msg = RasterAttached
+   MsgBox msg
+End Sub
+
+
+
+
+Sub FileAttributeSettings()
+  Dim MESSAGE As String
+  Dim SnapE As Boolean
+  Dim UnitL As Boolean
+  Dim graphG As Boolean
+  Dim activeR As Boolean
+  Dim ActRefMod As ModelReference
+  
+  With Application.ActiveSettings
+      .SnapLockEnabled = True
+      .UnitLockEnabled = True
+      .GraphicGroupLockEnabled = True
+        '    .GridUnits
+        '    .GridReference
+       .AxisLockEnabled = False
+       .GridLockEnabled = False
+       
+  End With
+ 
+  CadInputQueue.SendKeyin "LOCK SNAP KEYpoint"
+  
+' If activeR = Application.HasActiveModelReference Then
+'   Set ActRefMod = Application.ActiveModelReference
+' End If
+      
+'   MsgBox SnapE & UnitL
+    
+End Sub
+
+
+
+Function ScanForDims() As String
+    Dim counter As Integer
+    Dim myElement As Element
+    Dim myEnum As ElementEnumerator
+    Dim myDim As DimensionElement
+    
+    Dim esc As ElementScanCriteria
+    Set esc = New ElementScanCriteria
+    
+    Dim getDimText As ComplexElement
+    
+    esc.ExcludeAllTypes
+    esc.IncludeType msdElementTypeDimension
+        
+    Set myEnum = ActiveModelReference.Scan(esc)
+    counter = 0
+        
+    Do While myEnum.MoveNext
+    
+        Set myDim = myEnum.Current
+        
+        
+        
+        If myDim.IsTextElement Then
+          'MsgBox myDim.IsTextElement
+        End If
+        
+         If myDim.IsGraphical Then
+          'MsgBox myDim.IsGraphical
+          'MsgBox myDim.ActualValue
+          'Set getDimText = myDim.AsComplexElement
+          
+          'getDimText.GetSubElements
+          
+          
+        End If
+                
+        'MsgBox Str(dimValue) & "zeros " & Str(ZeroValue)
+        counter = counter + 1
+        
+    Loop
+    
+    If counter > 0 Then
+       ScanForDims = Str(counter) & " Dimensions Found!"
+       Exit Function
+    End If
+     ScanForDims = ""
+End Function
+
+Sub test_ScanForDims()
+
+   Dim msg As String
+   msg = ScanForDims
+   MsgBox msg
+   
+End Sub
+
+Sub GetRange()
+ On Error GoTo errhnd
+ Dim lngDspPrty As Long
+  
+ Dim ele As CellElement
+ Dim success As Boolean
+ success = False
+ Dim rng As Range3d
+ Dim BorderName As String
+ 
+ Set ele = GetBorder(False, True)
+ rng = ele.Range
+ BorderName = ele.Name
+ 
+ success = ZoomToTitle(rng, BorderName, 1)
+ 
+ 'MsgBox success
+errhnd:
+   Select Case Err.number
+     Case 91 'Get Border didn't find any Borders
+             'Could be a raster file a raster Title Block
+       MsgBox "Program ended! No title block on this drawing."
+       Err.Clear
+     End Select
+End Sub
+
+Function ZoomToTitle(Rngr As Range3d, BDR_X1X As String, viewNmbr As Integer) As Boolean
+ Dim dblFactor As Double
+ Dim DeltaY As Double
+ Dim DeltaX As Double
+ Dim oView As View
+ Set oView = ActiveDesignFile.Views(viewNmbr)
+ Dim pntOrigin As Point3d
+ Dim rngExtents As Range3d
+ Dim pntExtents As Point3d
+ Dim myLine As LineElement
+ Dim pntZoom As Point3d
+ 
+ 'Establish extents just around the Title Block area
+ 'This allows for extra elements outside of the Title Block
+ 'area to not affect the zoom into the title area of the Title
+ 'Block
+ '*******************************************
+ rngExtents = Rngr
+ 
+ oView.Origin = rngExtents.Low
+ 
+ pntExtents.x = rngExtents.High.x - rngExtents.Low.x
+ pntExtents.Y = rngExtents.High.Y - rngExtents.Low.Y
+ 
+ oView.Extents = pntExtents
+ 'oView.Redraw
+ 'oView.Redraw
+ '********************************************
+ 
+ pntOrigin.x = Rngr.Low.x
+ pntOrigin.Y = Rngr.Low.Y
+ pntOrigin.Z = 0
+ 
+ DeltaX = Rngr.High.x - Rngr.Low.x
+ DeltaY = Rngr.High.Y - Rngr.Low.Y
+ 
+ Select Case BDR_X1X
+    Case "BDR-D10"
+        With Rngr
+          pntZoom.x = .Low.x + (1.488623 * DeltaY)
+          pntZoom.Y = .Low.Y + (0.2227318 * DeltaY)
+        End With
+        dblFactor = 0.45
+     Case "BDR-E10"
+        With Rngr
+          pntZoom.x = .Low.x + (1.358326 * DeltaY)
+          pntZoom.Y = .Low.Y + (0.163336 * DeltaY)
+        End With
+        dblFactor = 0.33
+     Case "BDR-D12"
+        With Rngr
+          pntZoom.x = .Low.x + (1.488623 * DeltaY)
+          pntZoom.Y = .Low.Y + (0.2227318 * DeltaY)
+        End With
+        dblFactor = 0.45
+     Case "BDR-E12"
+        With Rngr
+          pntZoom.x = .Low.x + (1.358323 * DeltaY)
+          pntZoom.Y = .Low.Y + (0.163336 * DeltaY)
+        End With
+        dblFactor = 0.33
+     Case "BDR-T10"
+        With Rngr
+          pntZoom.x = .Low.x + (0.9702261904 * DeltaX)
+          pntZoom.Y = .Low.Y + (0.16335 * DeltaY)
+        End With
+        dblFactor = 0.33
+     Case "BDR-T12"
+        With Rngr
+          pntZoom.x = .Low.x + (0.9702214 * DeltaX)
+          pntZoom.Y = .Low.Y + (0.16333 * DeltaY)
+        End With
+        dblFactor = 0.33
+     Case Else
+       ZoomToTitle = False
+       Exit Function
+ End Select
+ 
+         
+'      With Application
+'        Set myLine = .CreateLineElement2(Nothing, pntOrigin, pntZoom)
+'        .ActiveModelReference.AddElement myLine
+'      End With
+
+
+ 'Zoom about the center of the range.
+ oView.ZoomAboutPoint pntZoom, dblFactor
+ oView.Redraw
+ oView.Redraw
+ ZoomToTitle = True
+ 
+
+End Function
+
+
+
+
+
+

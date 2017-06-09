@@ -1,0 +1,256 @@
+Private Sub btnClear_Click()
+  MsgBox "UNDER CONSTRUCTION - THE PLAN IS TO CLEAR AN ENTIRE LINE IF THE REVISION NUMBER IS LEFT BLANK."
+End Sub
+
+Private Sub btnClose_Click()
+  Unload Me
+End Sub
+
+Private Sub btnCopyUp_Click()
+  MsgBox "Under Construction - when Title Block is full, move the 2nd and 3rd revs to make room for rev 4"
+End Sub
+
+Private Sub btnGetRevTags_Click()
+   Dim GetRevInfo As RevInfo
+   
+   GetRevInfo = modRevBlock.GetRevInfo
+   
+   With frmRevBlock
+    .Rev1 = GetRevInfo.Rev1
+    .Rev2 = GetRevInfo.Rev2
+    .Rev3 = GetRevInfo.Rev3
+    .DateMonth = GetRevInfo.Date_MN
+    .DateDay = GetRevInfo.Date_DY
+    .DateYear = GetRevInfo.Date_YR
+    .DateAMonth = GetRevInfo.DateA_MN
+    .DateADay = GetRevInfo.DateA_DY
+    .DateAYear = GetRevInfo.DateA_YR
+    .DateBMonth = GetRevInfo.DateB_MN
+    .DateBDay = GetRevInfo.DateB_DY
+    .DateBYear = GetRevInfo.DateB_YR
+    .DateCMonth = GetRevInfo.DateC_MN
+    .DateCDay = GetRevInfo.DateC_DY
+    .DateCYear = GetRevInfo.DateC_YR
+    .Line1a = GetRevInfo.Line1a
+    .line1b = GetRevInfo.line1b
+    .Line2a = GetRevInfo.Line2a
+    .Line2b = GetRevInfo.Line2b
+    .Line3a = GetRevInfo.Line3a
+    .Line3b = GetRevInfo.Line3b
+    .Line4a = GetRevInfo.Line4a
+    .Line4b = GetRevInfo.Line4b
+    .IREG_DRA = GetRevInfo.Reg_DRA
+    .IREG_DES = GetRevInfo.Reg_DES
+    .IREG_ENG = GetRevInfo.Reg_ENG
+    .IREG_CHK = GetRevInfo.Reg_CHK
+    .IREG_APP = GetRevInfo.Reg_APP
+    .IA_DRA = GetRevInfo.A_DRA
+    .IA_DES = GetRevInfo.A_DES
+    .IA_ENG = GetRevInfo.A_ENG
+    .IA_CHK = GetRevInfo.A_CHK
+    .IA_APP = GetRevInfo.A_APP
+    .IB_DRA = GetRevInfo.B_DRA
+    .IB_DES = GetRevInfo.B_DES
+    .IB_ENG = GetRevInfo.B_ENG
+    .IB_CHK = GetRevInfo.B_CHK
+    .IB_APP = GetRevInfo.B_APP
+    .IC_DRA = GetRevInfo.C_DRA
+    .IC_DES = GetRevInfo.C_DES
+    .IC_ENG = GetRevInfo.C_ENG
+    .IC_CHK = GetRevInfo.C_CHK
+    .IC_APP = GetRevInfo.C_APP
+   End With
+   
+End Sub
+
+Private Sub btnUpdate_Click()
+  Dim X As Long
+   
+   Dim AllRevInfo(43, 2) As String
+   
+   AllRevInfo(0, 0) = "RevNo"
+   AllRevInfo(0, 1) = "Rev1"
+   AllRevInfo(0, 2) = frmRevBlock.Rev1
+   
+   AllRevInfo(1, 0) = "RevNo"
+   AllRevInfo(1, 1) = "Rev2"
+   AllRevInfo(1, 2) = frmRevBlock.Rev2
+   
+   AllRevInfo(2, 0) = "RevNo"
+   AllRevInfo(2, 1) = "Rev3"
+   AllRevInfo(2, 2) = frmRevBlock.Rev3
+   
+   AllRevInfo(3, 0) = "Date"
+   AllRevInfo(3, 1) = "1_Month"
+   AllRevInfo(3, 2) = frmRevBlock.DateMonth
+   
+   AllRevInfo(4, 0) = "Date"
+   AllRevInfo(4, 1) = "2_Day"
+   AllRevInfo(4, 2) = frmRevBlock.DateDay
+   
+   AllRevInfo(5, 0) = "Date"
+   AllRevInfo(5, 1) = "3_Year"
+   AllRevInfo(5, 2) = frmRevBlock.DateYear
+   
+   AllRevInfo(6, 0) = "DateA"
+   AllRevInfo(6, 1) = "1_Month"
+   AllRevInfo(6, 2) = frmRevBlock.DateAMonth
+   
+   AllRevInfo(7, 0) = "DateA"
+   AllRevInfo(7, 1) = "2_Day"
+   AllRevInfo(7, 2) = frmRevBlock.DateADay
+   
+   AllRevInfo(8, 0) = "DateA"
+   AllRevInfo(8, 1) = "3_Year"
+   AllRevInfo(8, 2) = frmRevBlock.DateAYear
+   
+   AllRevInfo(9, 0) = "DateB"
+   AllRevInfo(9, 1) = "1_Month"
+   AllRevInfo(9, 2) = frmRevBlock.DateBMonth
+   
+   AllRevInfo(10, 0) = "DateB"
+   AllRevInfo(10, 1) = "2_Day"
+   AllRevInfo(10, 2) = frmRevBlock.DateBDay
+   
+   AllRevInfo(11, 0) = "DateB"
+   AllRevInfo(11, 1) = "3_Year"
+   AllRevInfo(11, 2) = frmRevBlock.DateBYear
+   
+   AllRevInfo(12, 0) = "DateC"
+   AllRevInfo(12, 1) = "1_Month"
+   AllRevInfo(12, 2) = frmRevBlock.DateCMonth
+   
+   AllRevInfo(13, 0) = "DateC"
+   AllRevInfo(13, 1) = "2_Day"
+   AllRevInfo(13, 2) = frmRevBlock.DateCDay
+   
+   AllRevInfo(14, 0) = "DateC"
+   AllRevInfo(14, 1) = "3_Year"
+   AllRevInfo(14, 2) = frmRevBlock.DateCYear
+   
+   AllRevInfo(15, 0) = "RevisionDescriptions"
+   AllRevInfo(15, 1) = "Line1a"
+   AllRevInfo(15, 2) = frmRevBlock.Line1a
+
+   AllRevInfo(16, 0) = "RevisionDescriptions"
+   AllRevInfo(16, 1) = "Line1b"
+   AllRevInfo(16, 2) = frmRevBlock.line1b
+ 
+   AllRevInfo(17, 0) = "RevisionDescriptions"
+   AllRevInfo(17, 1) = "Line2a"
+   AllRevInfo(17, 2) = frmRevBlock.Line2a
+   
+   AllRevInfo(18, 0) = "RevisionDescriptions"
+   AllRevInfo(18, 1) = "Line2b"
+   AllRevInfo(18, 2) = frmRevBlock.Line2b
+   
+   AllRevInfo(19, 0) = "RevisionDescriptions"
+   AllRevInfo(19, 1) = "Line3a"
+   AllRevInfo(19, 2) = frmRevBlock.Line3a
+   
+   AllRevInfo(20, 0) = "RevisionDescriptions"
+   AllRevInfo(20, 1) = "Line3b"
+   AllRevInfo(20, 2) = frmRevBlock.Line3b
+
+   AllRevInfo(21, 0) = "RevisionDescriptions"
+   AllRevInfo(21, 1) = "Line4a"
+   AllRevInfo(21, 2) = frmRevBlock.Line4a
+   
+   AllRevInfo(22, 0) = "RevisionDescriptions"
+   AllRevInfo(22, 1) = "Line4b"
+   AllRevInfo(22, 2) = frmRevBlock.Line4b
+
+   AllRevInfo(23, 0) = "Initals reg"
+   AllRevInfo(23, 1) = "1_Drawn"
+   AllRevInfo(23, 2) = frmRevBlock.IREG_DRA
+   
+   AllRevInfo(24, 0) = "Initals reg"
+   AllRevInfo(24, 1) = "2_Designer"
+   AllRevInfo(24, 2) = frmRevBlock.IREG_DES
+
+   AllRevInfo(25, 0) = "Initals reg"
+   AllRevInfo(25, 1) = "3_Engineer"
+   AllRevInfo(25, 2) = frmRevBlock.IREG_ENG
+
+   AllRevInfo(26, 0) = "Initals reg"
+   AllRevInfo(26, 1) = "4_Check"
+   AllRevInfo(26, 2) = frmRevBlock.IREG_CHK
+
+   AllRevInfo(27, 0) = "Initals reg"
+   AllRevInfo(27, 1) = "5_Approved"
+   AllRevInfo(27, 2) = frmRevBlock.IREG_APP
+
+   AllRevInfo(28, 0) = "InitialsA_1"
+   AllRevInfo(28, 1) = "1_Drawn"
+   AllRevInfo(28, 2) = frmRevBlock.IA_DRA
+   
+   AllRevInfo(29, 0) = "InitialsA_1"
+   AllRevInfo(29, 1) = "2_Designer"
+   AllRevInfo(29, 2) = frmRevBlock.IA_DES
+
+   AllRevInfo(30, 0) = "InitialsA_1"
+   AllRevInfo(30, 1) = "3_Engineer"
+   AllRevInfo(30, 2) = frmRevBlock.IA_ENG
+
+   AllRevInfo(31, 0) = "InitialsA_1"
+   AllRevInfo(31, 1) = "4_Check"
+   AllRevInfo(31, 2) = frmRevBlock.IA_CHK
+
+   AllRevInfo(32, 0) = "InitialsA_1"
+   AllRevInfo(32, 1) = "5_Approved"
+   AllRevInfo(32, 2) = frmRevBlock.IA_APP
+  
+   AllRevInfo(33, 0) = "InitialsB_1"
+   AllRevInfo(33, 1) = "1_Drawn"
+   AllRevInfo(33, 2) = frmRevBlock.IB_DRA
+   
+   AllRevInfo(34, 0) = "InitialsB_1"
+   AllRevInfo(34, 1) = "2_Designer"
+   AllRevInfo(34, 2) = frmRevBlock.IB_DES
+
+   AllRevInfo(35, 0) = "InitialsB_1"
+   AllRevInfo(35, 1) = "3_Engineer"
+   AllRevInfo(35, 2) = frmRevBlock.IB_ENG
+
+   AllRevInfo(36, 0) = "InitialsB_1"
+   AllRevInfo(36, 1) = "4_Check"
+   AllRevInfo(36, 2) = frmRevBlock.IB_CHK
+
+   AllRevInfo(37, 0) = "InitialsB_1"
+   AllRevInfo(37, 1) = "5_Approved"
+   AllRevInfo(37, 2) = frmRevBlock.IB_APP
+   
+   AllRevInfo(38, 0) = "InitialsC_1"
+   AllRevInfo(38, 1) = "1_Drawn"
+   AllRevInfo(38, 2) = frmRevBlock.IC_DRA
+   
+   AllRevInfo(39, 0) = "InitialsC_1"
+   AllRevInfo(39, 1) = "2_Designer"
+   AllRevInfo(39, 2) = frmRevBlock.IC_DES
+
+   AllRevInfo(40, 0) = "InitialsC_1"
+   AllRevInfo(40, 1) = "3_Engineer"
+   AllRevInfo(40, 2) = frmRevBlock.IC_ENG
+
+   AllRevInfo(41, 0) = "InitialsC_1"
+   AllRevInfo(41, 1) = "4_Check"
+   AllRevInfo(41, 2) = frmRevBlock.IC_CHK
+
+   AllRevInfo(42, 0) = "InitialsC_1"
+   AllRevInfo(42, 1) = "5_Approved"
+   AllRevInfo(42, 2) = frmRevBlock.IC_APP
+
+   For X = 0 To 43 Step 1
+   
+        modRevBlock.UpdateRevInfo AllRevInfo(X, 0), AllRevInfo(X, 1), AllRevInfo(X, 2)
+        
+   Next X
+   
+End Sub
+
+
+
+
+Private Sub UserForm_Click()
+
+End Sub

@@ -1,0 +1,132 @@
+Public Type TitleInfo
+   SubName As String
+   IndexNo As String
+   SheetNum As String
+   SheetOf As String
+   RevNum As String
+   DistCode As String
+   DescLine1 As String
+   DescLine2 As String
+   DescLine3 As String
+End Type
+
+Function GetTagInfo() As TitleInfo
+
+    Dim GetTitleInfo As TitleInfo
+    Dim newvalue As String
+    Dim myTag As TagElement
+    Dim myElemEnum As ElementEnumerator
+    Dim myFilter As New ElementScanCriteria
+    myFilter.ExcludeAllTypes
+    myFilter.IncludeType msdElementTypeTag
+    Set myElemEnum = Application.ActiveModelReference.Scan(myFilter)
+    'Set myElemEnum = Application.ActiveModelReference.Scan()
+    
+    
+    While myElemEnum.MoveNext
+    
+        Set myTag = myElemEnum.Current
+        
+        With myTag
+        
+            If .TagSetName = "SubstationName" And .TagDefinitionName = "SubstationName" Then
+                GetTitleInfo.SubName = .Value
+            End If
+            
+            If .TagSetName = "SubstationIndexNo" And .TagDefinitionName = "DocumentNo" Then
+                GetTitleInfo.IndexNo = .Value
+            End If
+            
+            If .TagSetName = "SheetNo" And .TagDefinitionName = "Number" Then
+                GetTitleInfo.SheetNum = .Value
+            End If
+            
+            If .TagSetName = "SheetOf" And .TagDefinitionName = "of #" Then
+                GetTitleInfo.SheetOf = .Value
+            End If
+            
+            If myTag.TagSetName = "RevisionNo" And .TagDefinitionName = "Number" Then
+                GetTitleInfo.RevNum = .Value
+            End If
+            
+            If .TagSetName = "DistributionCode" And .TagDefinitionName = "Code" Then
+                GetTitleInfo.DistCode = .Value
+            End If
+            
+            If .TagSetName = "DescriptionLines" And .TagDefinitionName = "Line1" Then
+                GetTitleInfo.DescLine1 = .Value
+            End If
+            
+            If .TagSetName = "DescriptionLines" And .TagDefinitionName = "Line2" Then
+                GetTitleInfo.DescLine2 = .Value
+            End If
+            
+            If .TagSetName = "DescriptionLines" And .TagDefinitionName = "Line3" Then
+                GetTitleInfo.DescLine3 = .Value
+            End If
+
+        
+        End With
+        
+     Wend
+     
+     GetTagInfo = GetTitleInfo
+     
+     
+End Function
+
+Sub TitleBlock()
+  frmTitleBlock.show vbModeless
+End Sub
+
+Sub TEST_UpdateTagInfo()
+
+ UpdateTagInfo "SubstationIndexNo", "DocumentNo", "RVGT-1234"
+ UpdateTagInfo "SubstationName", "SubstationName", "hello everybody"
+ 
+End Sub
+
+Sub UpdateTagInfo(TagSetName As String, TagDefName As String, TagValue As String)
+
+    Dim newvalue As String
+    Dim myTag As TagElement
+    Dim myElemEnum As ElementEnumerator
+    Dim myFilter As New ElementScanCriteria
+    myFilter.ExcludeAllTypes
+    myFilter.IncludeType msdElementTypeTag
+    Set myElemEnum = Application.ActiveModelReference.Scan(myFilter)
+    
+    While myElemEnum.MoveNext
+        Set myTag = myElemEnum.Current
+        
+        If myTag.TagSetName = TagSetName And myTag.TagDefinitionName = TagDefName Then
+            'myTag.Value = TagUpdate.SubName
+            myTag.Value = TagValue
+            myTag.Rewrite
+        End If
+     Wend
+End Sub
+
+
+Sub GetTagsA()
+'used to get all of the tags out of a drawing
+    Dim newvalue As String
+    Dim myTag As TagElement
+    Dim myElemEnum As ElementEnumerator
+    Dim myFilter As New ElementScanCriteria
+    myFilter.ExcludeAllTypes
+    myFilter.IncludeType msdElementTypeTag
+    Set myElemEnum = Application.ActiveModelReference.Scan(myFilter)
+    
+    While myElemEnum.MoveNext
+        Set myTag = myElemEnum.Current
+        'MsgBox myTag.TagSetName & vbTab & myTag.TagDefinitionName
+        Debug.Print myTag.TagSetName & vbTab & vbTab & myTag.TagDefinitionName _
+            & vbTab & myTag.Value
+    Wend
+            'newvalue = InputBox("enter new value for: " & myTag.TagDefinitionName)
+            'myTag.Value = newvalue
+            'myTag.Rewrite
+    
+End Sub
+

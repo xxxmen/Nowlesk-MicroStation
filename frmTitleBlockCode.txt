@@ -1,0 +1,109 @@
+
+Private Sub btnGetTitleInfo_Click()
+
+   Dim GetInfo As TitleInfo
+   
+   GetInfo = modTitleBlock.GetTagInfo
+   
+   With frmTitleBlock
+   
+   .txtSubName = GetInfo.SubName
+   .txtIndexNo = GetInfo.IndexNo
+   .txtSheetNum = GetInfo.SheetNum
+   .txtSheetOf = GetInfo.SheetOf
+   .txtRevNum = GetInfo.RevNum
+   .cmboxDistCode = GetInfo.DistCode
+   .txtDescLine1 = GetInfo.DescLine1
+   .txtDescLine2 = GetInfo.DescLine2
+   .txtDescLine3 = GetInfo.DescLine3
+   
+   End With
+   
+End Sub
+
+Private Sub btnUpdate_Click()
+
+   Dim X As Long
+   
+   Dim AllTagInfo(9, 2) As String
+   
+   AllTagInfo(0, 0) = "SubstationName"
+   AllTagInfo(0, 1) = "SubstationName"
+   AllTagInfo(0, 2) = frmTitleBlock.txtSubName
+   AllTagInfo(1, 0) = "SubstationIndexNo"
+   AllTagInfo(1, 1) = "DocumentNo"
+   AllTagInfo(1, 2) = frmTitleBlock.txtIndexNo
+   AllTagInfo(2, 0) = "SheetNo"
+   AllTagInfo(2, 1) = "Number"
+   AllTagInfo(2, 2) = frmTitleBlock.txtSheetNum
+   AllTagInfo(3, 0) = "SheetOf"
+   AllTagInfo(3, 1) = "of #"
+   AllTagInfo(3, 2) = frmTitleBlock.txtSheetOf
+   AllTagInfo(4, 0) = "RevisionNo"
+   AllTagInfo(4, 1) = "Number"
+   AllTagInfo(4, 2) = frmTitleBlock.txtRevNum
+   AllTagInfo(5, 0) = "DistributionCode"
+   AllTagInfo(5, 1) = "Code"
+   AllTagInfo(5, 2) = frmTitleBlock.cmboxDistCode.Value
+   AllTagInfo(6, 0) = "DescriptionLines"
+   AllTagInfo(6, 1) = "Line1"
+   AllTagInfo(6, 2) = frmTitleBlock.txtDescLine1
+   AllTagInfo(7, 0) = "DescriptionLines"
+   AllTagInfo(7, 1) = "Line2"
+   AllTagInfo(7, 2) = frmTitleBlock.txtDescLine2
+   AllTagInfo(8, 0) = "DescriptionLines"
+   AllTagInfo(8, 1) = "Line3"
+   AllTagInfo(8, 2) = frmTitleBlock.txtDescLine3
+
+   For X = 0 To 9 Step 1
+   
+        modTitleBlock.UpdateTagInfo AllTagInfo(X, 0), AllTagInfo(X, 1), AllTagInfo(X, 2)
+        
+   Next X
+   
+End Sub
+
+Private Sub cmboxDistCode_Change()
+
+End Sub
+
+Private Sub cmdClose_Click()
+ Unload Me
+End Sub
+
+Private Sub TextBox7_Change()
+
+End Sub
+
+Private Sub txtDescLine1_Change()
+
+End Sub
+
+Private Sub txtIndexNo_Change()
+
+End Sub
+
+Private Sub txtRevNum_Change()
+
+End Sub
+
+Private Sub txtSubName_Change()
+
+End Sub
+
+Private Sub UserForm_Click()
+
+End Sub
+
+Private Sub UserForm_Initialize()
+
+  frmTitleBlock.cmboxDistCode.AddItem "CP"
+  frmTitleBlock.cmboxDistCode.AddItem "AG"
+  frmTitleBlock.cmboxDistCode.AddItem "BG"
+  frmTitleBlock.cmboxDistCode.AddItem "FF"
+  frmTitleBlock.cmboxDistCode.AddItem "OC"
+  frmTitleBlock.cmboxDistCode.AddItem "ST"
+  'PUTS FIRST ITEM INTO TOP SPOT ON COMBO BOX
+  frmTitleBlock.cmboxDistCode.ListIndex = 0
+  
+End Sub

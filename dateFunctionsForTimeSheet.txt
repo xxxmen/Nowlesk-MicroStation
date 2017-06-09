@@ -1,0 +1,66 @@
+Function DateToStr(DateVar As Date) As String
+     'This function converts a date value to a string
+     'and cuts out the '20' in the year digits -> yyyy to yy
+     Dim strTabDate As String
+      
+     'convert date to string
+     strTabDate = Str(DateVar)
+   
+     'remove leading spaces
+     strTabDate = Trim(strTabDate)
+     
+     'get year date to two digits by eliminating the "20" from "2014"
+     Dim Len_ddmm As Integer
+     Len_ddmm = Len(strTabDate) - 4
+     strTabDate = Left(strTabDate, Len_ddmm) & Right(strTabDate, 2)
+          
+     'get the tab date without the back slash
+     strTabDate = Replace(strTabDate, "/", " ")
+ 
+     DateToStr = strTabDate
+        
+End Function
+
+Sub test_date2string()
+
+  Dim str1 As String
+  Dim A_date As Date
+  
+  A_date = Date
+    
+  str1 = DateToStr(A_date)
+  
+  MsgBox str1
+    
+End Sub
+
+Sub test_get_sunday()
+   Dim testdate As Date
+   
+   testdate = GetASundayDate(2)
+   MsgBox "hi"
+End Sub
+
+Function GetASundayDate(X_SundaysAway As Integer, Optional WeekNumber As Integer) As Date
+    'The coming sunday is 0, and the next Sunday is 1 and so on
+            
+    'get the current number of week for the year
+    Dim intWeekNumber As Integer
+    intWeekNumber = WorksheetFunction.WeekNum(Now, 2)     '2 assigns begining of week to Monday
+        
+    'get date for first Sunday
+    Dim dteThisSunday As Date
+    Dim TodaysDate As Date
+    Dim IntervalType As String
+    Dim intDaysToSunday As Integer
+    IntervalType = "d"                                     ' "d" specifies days as interval.
+    TodaysDate = Date
+    intDaysToSunday = 7 - Weekday(Now, vbMonday)
+    dteThisSunday = DateAdd(IntervalType, intDaysToSunday, TodaysDate)
+    
+    Dim IntSundaysAway As Integer
+    IntSundaysAway = X_SundaysAway * 7
+    
+    GetASundayDate = DateAdd(IntervalType, IntSundaysAway, dteThisSunday)
+       
+End Function

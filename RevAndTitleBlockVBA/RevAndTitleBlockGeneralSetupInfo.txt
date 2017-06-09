@@ -1,0 +1,15 @@
+Function Key Assignments:
+Workspace > Function Keys
+
+see FunctionKeyAssign PGNs
+
+Software works from:
+
+frmTitleBlock
+modTitleBlock
+
+frmRevBlock
+modRevBlock
+
+
+

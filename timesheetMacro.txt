@@ -1,0 +1,435 @@
+Option Explicit
+
+
+Function PrevSheet(rCell As Range)
+
+    Application.Volatile
+    Dim i As Integer
+    i = rCell.Cells(1).Parent.Index
+    PrevSheet = Sheets(i - 1).Range(rCell.Address)
+    
+End Function
+
+
+Sub copysheet()
+'
+' CopySheet Macro
+' Copies the sheet and increments the sheet name and date
+'
+    Application.Volatile  'gets date functions in the spreadsheet to update
+    Dim i As Integer
+    i = Range("A1").Cells(1).Parent.Index
+    
+    Dim ThisWeek As String
+    Dim ThisWk As Date
+    
+    Sheets(i).Select
+    ThisWk = (WorksheetFunction.WeekNum(Now - 1) - 40) * 7 + DateValue("10/06/2013")
+    ThisWeek = Str(Month(ThisWk)) & Str(Day(ThisWk)) & Str(Year(ThisWk) - 2000)
+    Sheets(i).Select
+    Sheets(i).Copy after:=Sheets(i)
+    Sheets(i + 1).Select
+    Sheets(i + 1).Name = ThisWeek
+    
+End Sub
+
+Sub CopySheet2()
+
+
+
+  
+  
+  
+End Sub
+
+Sub test_DateFun()
+    'by Keith Knowles
+    Dim NextSunday As Date
+    Dim Mnth As String
+    Dim Dy As String
+    Dim Yr As String
+    Dim theweek As Integer
+    Dim TabDate As String
+    
+    theweek = WorksheetFunction.WeekNum(Now, 2) '2 assigns begining of week to Monday
+       
+    Mnth = Str(Month(Now))
+    Dy = Str(Day(Now))
+    Yr = Str(Year(Now))
+    TabDate = Mnth & " " & Dy & " " & Right(Yr, 2)
+    
+    MsgBox TabDate & " " & Weekday(Now, vbMonday) & " next sunday is: " & 7 - Weekday(Now, vbMonday) & " days away!"
+        
+    Dim IntervalType As String
+    Dim intDaysToSunday As Integer
+    Dim Msg As String
+    IntervalType = "d"           ' "d" specifies days as interval.
+    TodaysDate = Date            ' = InputBox("Enter a date")
+    
+    intDaysToSunday = 7 - Weekday(Now, vbMonday)               'InputBox("Enter number of months to add")
+    
+    'Msg = "Nex Sunday is: " & DateAdd(IntervalType, intDaysToSunday, TodaysDate)
+    NextSunday = DateAdd(IntervalType, intDaysToSunday, TodaysDate)
+    MsgBox NextSunday
+    
+    'check if last sunday, or previous week was not done then ask if user wants to make the last weeks time sheet
+    
+       'if filling out last weeks time card then copy the sheet with last weeks date
+       'exit sub
+       
+    'check if time sheet for current week exists
+        'if not then create the time sheet
+        'exit sub
+        
+     'determine the next available time sheet week and ask user if they want to create another time sheet
+         'x weeks "specific date" from the current week.
+         'create time sheet
+
+End Sub
+
+Function sheetexists(sName As String) As Boolean
+  Dim aSheet As Object
+  sheetexists = False  'set return value of function to false
+  
+  For Each aSheet In ActiveWorkbook.Sheets
+    If (StrComp(aSheet.Name, sName, vbTextCompare) = 0) Then
+      sheetexists = True
+    End If
+  Next aSheet
+End Function
+
+Sub test_sheetexists()
+  Dim testname As String
+  testname = "12 29 12"
+  Dim there As Boolean
+  
+  
+  there = sheetexists(testname)
+  MsgBox there
+  
+  
+
+End Sub
+
+Sub test_NextSunday()
+
+Dim FirstDate As Date    ' Declare variables.
+Dim IntervalType As String
+Dim Number As Integer
+Dim Msg
+IntervalType = "d"    ' "m" specifies months as interval.
+FirstDate = InputBox("Enter a date")
+Number = InputBox("Enter number of months to add")
+Msg = "New date: " & DateAdd(IntervalType, Number, FirstDate)
+MsgBox Msg
+End Sub
+
+Sub NextSunday()
+    Dim NextSunday As Date
+    Dim strNextSunday As String
+    Dim Mnth As String
+    Dim Dy As String
+    Dim Yr As String
+    Dim theweek As Integer
+    Dim strTabDate As String
+    Dim TabDate As Date
+    Dim TodaysDate As Date
+        
+    theweek = WorksheetFunction.WeekNum(Now, 2) '2 assigns begining of week to Monday
+       
+    Mnth = Str(Month(Now))
+    Dy = Str(Day(Now))
+    Yr = Str(Year(Now))
+    TabDate = Mnth & " " & Dy & " " & Right(Yr, 2)
+       
+    Dim IntervalType As String
+    Dim intDaysToSunday As Integer
+    Dim Msg As String
+    IntervalType = "d"           ' "d" specifies days as interval.
+    TodaysDate = Date            ' = InputBox("Enter a date")
+    
+    intDaysToSunday = 7 - Weekday(Now, vbMonday)
+    
+    
+    'Msg = "Nex Sunday is: " & DateAdd(IntervalType, intDaysToSunday, TodaysDate)
+    NextSunday = DateAdd(IntervalType, intDaysToSunday, TodaysDate)
+    
+    'msgBox NextSunday
+    strNextSunday = Str(NextSunday)
+    
+     TabDate = InputBox("Enter Weekending Sunday Date:", "Enter Sunday Date: mm/dd/yyyy ", strNextSunday)
+     strTabDate = Str(TabDate)
+     MsgBox strTabDate
+     
+     'remove leading spaces
+     strTabDate = Trim(strTabDate)
+     
+     'get year date to two digits by eliminating the "20" from "2014"
+     Dim Len_ddmm As Integer
+     Len_ddmm = Len(strTabDate) - 4
+     strTabDate = Left(strTabDate, Len_ddmm) & Right(strTabDate, 2)
+          
+     'get the tab date without the back slash
+     strTabDate = Replace(strTabDate, "/", " ")
+ 
+     MsgBox strTabDate
+    
+     
+     Dim bolSheetName As Boolean
+     Dim strShtName As String
+     Dim i As Integer
+     
+     'get current sheet name
+     strShtName = ActiveSheet.Name
+     
+     
+     'If (bolSheetName = sheetexists(strTabDate)) Then
+     MsgBox strShtName
+     
+     'Worksheets(strShtName).Name = "not this"
+     
+     i = Sheets.Count
+     
+     MsgBox i
+     
+     ActiveSheet.Copy after:=Sheets(i)
+     Sheets(i + 1).Name = "the end sheet"
+     
+     ActiveSheet.Range("K3:L3").Select
+     
+     Selection.Value = TabDate
+     
+     Range("A2:A50").Select
+     
+     
+    Selection.Clear
+    Selection.NumberFormat = "0.00"
+    
+   
+End Sub
+
+Sub test_addDays()
+
+Dim FirstDate As Date    ' Declare variables.
+Dim IntervalType As String
+Dim Number As Integer
+Dim Msg
+IntervalType = "d"    ' "d" specifies months as interval.
+FirstDate = InputBox("Enter a date")
+Number = InputBox("Enter number of days to add")
+Msg = "New date: " & DateAdd(IntervalType, Number, FirstDate)
+MsgBox Msg
+
+
+End Sub
+
+
+Sub InsertSum()
+'
+' InsertSum Macro
+'
+'
+    ActiveCell.Rows("1:2").EntireRow.Select
+    Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+    ActiveCell.Offset(0, 1).Range("A1").Select
+    ActiveCell.FormulaR1C1 = "=SUM(R[-2]C:R[-1]C)"
+    ActiveCell.Select
+    Selection.Font.Bold = True
+    Selection.Font.Italic = True
+End Sub
+
+Function DateToStr(DateVar As Date) As String
+     'By Keith Knowles April 2014
+     'This function converts a date value to a string
+     'and cuts out the '20' in the year digits -> yyyy to yy
+     Dim strTabDate As String
+      
+     'convert date to string
+     strTabDate = Str(DateVar)
+   
+     'remove leading spaces
+     strTabDate = Trim(strTabDate)
+     
+     'get year date to two digits by eliminating the "20" from "2014"
+     Dim Len_ddmm As Integer
+     Len_ddmm = Len(strTabDate) - 4
+     strTabDate = Left(strTabDate, Len_ddmm) & Right(strTabDate, 2)
+          
+     'get the tab date without the back slash
+     strTabDate = Replace(strTabDate, "/", " ")
+ 
+     DateToStr = strTabDate
+        
+End Function
+
+Sub test_date2string()
+
+  Dim str1 As String
+  Dim A_date As Date
+  
+  A_date = Date
+   A_date = DateAdd("ww", 2, A_date)  '"ww" this increments by weeks instead of days
+   
+  str1 = DateToStr(A_date)
+  
+  MsgBox str1
+    
+End Sub
+
+Sub test_get_sunday()
+   Dim testdate As Date
+   
+   testdate = GetASundayDate(2)
+   MsgBox "hi"
+End Sub
+
+Function GetASundayDate(X_SundaysAway As Integer) As Date
+    'By Keith Knowles April 2014
+    'The coming sunday is 0, and the next Sunday is 1 and so on
+            
+    'get the current number of week for the year
+    Dim intWeekNumber As Integer
+    intWeekNumber = WorksheetFunction.WeekNum(Now, 2)     '2 assigns begining of week to Monday
+        
+    'get date for first Sunday
+    Dim dteThisSunday As Date
+    Dim TodaysDate As Date
+    Dim IntervalType As String
+    Dim intDaysToSunday As Integer
+    IntervalType = "d"                                     ' "d" specifies days as interval.
+    TodaysDate = Date
+    intDaysToSunday = 7 - Weekday(Now, vbMonday)
+    dteThisSunday = DateAdd(IntervalType, intDaysToSunday, TodaysDate)
+    
+    Dim IntSundaysAway As Integer
+    IntSundaysAway = X_SundaysAway * 7
+    
+    GetASundayDate = DateAdd(IntervalType, IntSundaysAway, dteThisSunday)
+       
+End Function
+
+Function FindNextAvailSunday(Optional BigError As String) As Integer
+    'By Keith Knowles April 2014
+    Dim dteSunday As Date
+    Dim strSunday As String
+    Dim bolSundaySheet As Boolean
+    Dim LoopCounter As Integer
+    
+    'start with the first week
+    LoopCounter = 0
+    
+    Do
+        
+        'Get the next Sunday
+        dteSunday = GetASundayDate(LoopCounter)
+        
+        'Get the String value of the Sheet Tab
+        strSunday = DateToStr(dteSunday)
+        
+        'Test to see if this sheet date exists
+        bolSundaySheet = sheetexists(strSunday)
+        
+        'Return a zero if ThisSunday doesn't exist
+        If bolSundaySheet = False Then
+          FindNextAvailSunday = LoopCounter
+          Exit Function
+        End If
+        
+        LoopCounter = LoopCounter + 1
+    
+    Loop Until LoopCounter = 9
+    
+    'BigError = "Over 9 weeks out! Sorry, no sheet copied!"
+    
+End Function
+
+Sub TEST_FINDNEXTAVAIL_SUNDAY()
+  Dim intWeeksOut As Integer
+  intWeeksOut = FindNextAvailSunday
+  
+  MsgBox intWeeksOut
+  
+End Sub
+
+    
+Sub extra_stuff()
+
+    Dim NextSunday As Date
+    Dim strNextSunday As String
+    Dim Mnth As String
+    Dim Dy As String
+    Dim Yr As String
+    Dim theweek As Integer
+    Dim strTabDate As String
+    Dim TabDate As Date
+    Dim TodaysDate As Date
+        
+    theweek = WorksheetFunction.WeekNum(Now, 2) '2 assigns begining of week to Monday
+       
+    Mnth = Str(Month(Now))
+    Dy = Str(Day(Now))
+    Yr = Str(Year(Now))
+    TabDate = Mnth & " " & Dy & " " & Right(Yr, 2)
+       
+    Dim IntervalType As String
+    Dim intDaysToSunday As Integer
+    Dim Msg As String
+    IntervalType = "d"           ' "d" specifies days as interval.
+    TodaysDate = Date            ' = InputBox("Enter a date")
+    
+    intDaysToSunday = 7 - Weekday(Now, vbMonday)
+  
+    'Msg = "Nex Sunday is: " & DateAdd(IntervalType, intDaysToSunday, TodaysDate)
+    NextSunday = DateAdd(IntervalType, intDaysToSunday, TodaysDate)
+    
+    'msgBox NextSunday
+    strNextSunday = Str(NextSunday)
+    
+     TabDate = InputBox("Enter Weekending Sunday Date:", "Enter Sunday Date: mm/dd/yyyy ", strNextSunday)
+     strTabDate = Str(TabDate)
+     MsgBox strTabDate
+     
+     'remove leading spaces
+     strTabDate = Trim(strTabDate)
+     
+     'get year date to two digits by eliminating the "20" from "2014"
+     Dim Len_ddmm As Integer
+     Len_ddmm = Len(strTabDate) - 4
+     strTabDate = Left(strTabDate, Len_ddmm) & Right(strTabDate, 2)
+          
+     'get the tab date without the back slash
+     strTabDate = Replace(strTabDate, "/", " ")
+ 
+     MsgBox strTabDate
+    
+     
+     Dim bolSheetName As Boolean
+     Dim strShtName As String
+     Dim i As Integer
+     
+     'get current sheet name
+     strShtName = ActiveSheet.Name
+     
+     
+     'If (bolSheetName = sheetexists(strTabDate)) Then
+     MsgBox strShtName
+     
+     'Worksheets(strShtName).Name = "not this"
+     
+     i = Sheets.Count
+     
+     MsgBox i
+     
+     ActiveSheet.Copy after:=Sheets(i)
+     Sheets(i + 1).Name = "the end sheet"
+     
+     ActiveSheet.Range("K3:L3").Select
+     
+     Selection.Value = TabDate
+     
+     Range("A2:A50").Select
+     
+    Selection.Clear
+    Selection.NumberFormat = "0.00"
+    
+End Sub

@@ -1,0 +1,168 @@
+Option Explicit
+
+Sub PrintInfo(eleComponent As Element)
+    With eleComponent
+        Debug.Print "Element " & DLongToString(.ID) & " color: " & .color
+    End With
+End Sub
+
+
+'
+'   This example reloads the ComplexElement from the design file so it has a copy
+'   of the element that has the changes that were written to the file.
+'
+Sub SubElements(eleCell As CellElement)
+    Dim eleComponent As Element
+    Dim ee As ElementEnumerator
+    Dim originalColor As Integer
+    
+    '
+    ' Get the sub elements and then get the first element
+    '
+    
+    Set ee = eleCell.GetSubElements
+    ee.MoveNext
+    'ee.BuildArrayFromContents
+    
+    Set eleComponent = ee.Current
+    
+    '
+    '   Get the color
+    '
+    originalColor = eleComponent.color
+    Debug.Print "The original color is " & originalColor
+    
+    '
+    '   Change the color and save the changed element to the design file.
+    '
+    eleComponent.color = originalColor + 1
+    eleComponent.Rewrite
+        
+    Dim ele As Element
+    Dim oModelReference As ModelReference
+    
+    '
+    '   Now use the element's ModelReference and element ID to reload
+    '   the ComplexElement from the design file. The first step
+    '   assigns the ComplexElement to a variable of type Element so the program
+    '   can use Element's methods.  After setting ele to eleCell, ele and
+    '   eleCell refer to the same object but these variables provide access to
+    '   different methods and properties.
+    '
+    Set ele = eleCell
+    Set oModelReference = ele.ModelReference
+    Set eleCell = oModelReference.GetElementByID(ele.ID)
+    
+    '
+    '   Get a new enumerator.  Since the program read the changes from the
+    '   DesignFile, the complex element now contains the changed component.
+    '
+    Set ee = eleCell.GetSubElements
+    ee.MoveNext
+    Set eleComponent = ee.Current
+    
+    '
+    '   Now it prints the updated color
+    '
+    PrintInfo eleComponent
+    
+     
+    
+End Sub
+
+Function GetBorder()
+
+  Dim oElem As Element
+  Dim oCellElem As CellElement
+  Dim allElem As ElementEnumerator
+  
+  
+  
+  Dim BdrObject As CellElement
+  Dim TbdrObject As CellElement
+  Dim oEnum As ElementEnumerator
+  Dim ElementCounter As Long
+  Dim BorderType As String
+  
+  Set oEnum = ActiveModelReference.Scan()
+
+  While oEnum.MoveNext
+        Set oElem = oEnum.Current
+        
+        If oElem.IsCellElement Then
+          Set oCellElem = oElem
+          
+          Select Case oCellElem.Name
+            Case "BDR-D10"
+              'MsgBox "D10"
+              MsgBox "found border"
+              
+                    Dim eleComponent As Element
+                    Dim ee As ElementEnumerator
+                    Dim originalColor As Integer
+                    
+                    '
+                    ' Get the sub elements and then get the first element
+                    '
+                    Set ee = oCellElem.GetSubElements
+                      
+                    ee.MoveNext
+                    Set eleComponent = ee.Current
+                  
+                    '
+                    '   Get the color
+                    '
+                    MsgBox eleComponent.IsGraphical
+                    MsgBox eleComponent.IsTextElement
+                    
+                     
+                    'If eleComponent.IsTextElement Then
+                    'eleComponent.AsTextElement
+                                    
+                    originalColor = eleComponent.color
+                    Debug.Print "The original color is " & originalColor
+                    
+                    '
+                    '   Change the color and save the changed element to the design file.
+                    '
+                    eleComponent.color = originalColor + 1
+                    eleComponent.Rewrite
+                    
+                     Dim ele As Element
+                        Dim oModelReference As ModelReference
+                        
+                        '
+                        '   Now use the element's ModelReference and element ID to reload
+                        '   the ComplexElement from the design file. The first step
+                        '   assigns the ComplexElement to a variable of type Element so the program
+                        '   can use Element's methods.  After setting ele to oCellElement, ele and
+                        '   eleCell refer to the same object but these variables provide access to
+                        '   different methods and properties.
+                        '
+                        Set ele = oCellElem
+                        Set oModelReference = ele.ModelReference
+                        Set oCellElem = oModelReference.GetElementByID(ele.ID)
+                        
+                        '
+                        '   Get a new enumerator.  Since the program read the changes from the
+                        '   DesignFile, the complex element now contains the changed component.
+                        '
+                        Set ee = oCellElem.GetSubElements
+                        ee.MoveNext
+                        Set eleComponent = ee.Current
+                        
+                        
+                        
+                        '
+                        '   Now it prints the updated color
+                        '
+                        PrintInfo eleComponent
+            
+            Case Else
+              'MsgBox "didn't find a border"
+           End Select
+        End If
+   Wend
+
+End Function
+

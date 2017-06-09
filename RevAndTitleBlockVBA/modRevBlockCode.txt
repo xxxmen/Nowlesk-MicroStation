@@ -1,0 +1,269 @@
+Public Type RevInfo
+
+   Rev1 As String
+   Rev2 As String
+   Rev3 As String
+   Date_YR As String
+   Date_MN As String
+   Date_DY As String
+   DateA_YR As String
+   DateA_MN As String
+   DateA_DY As String
+   DateB_YR As String
+   DateB_MN As String
+   DateB_DY As String
+   DateC_YR As String
+   DateC_MN As String
+   DateC_DY As String
+   Line1a As String
+   line1b As String
+   Line2a As String
+   Line2b As String
+   Line3a As String
+   Line3b As String
+   Line4a As String
+   Line4b As String
+   Reg_DRA As String
+   Reg_DES As String
+   Reg_ENG As String
+   Reg_CHK As String
+   Reg_APP As String
+   A_DRA As String
+   A_DES As String
+   A_ENG As String
+   A_CHK As String
+   A_APP As String
+   B_DRA As String
+   B_DES As String
+   B_ENG As String
+   B_CHK As String
+   B_APP As String
+   C_DRA As String
+   C_DES As String
+   C_ENG As String
+   C_CHK As String
+   C_APP As String
+   
+End Type
+
+Sub RevBlockEditor()
+  frmRevBlock.show vbModeless
+End Sub
+Function GetRevInfo() As RevInfo
+
+    Dim GetTitleInfo As TitleInfo
+    Dim newvalue As String
+    Dim myTag As TagElement
+    Dim myElemEnum As ElementEnumerator
+    Dim myFilter As New ElementScanCriteria
+    myFilter.ExcludeAllTypes
+    myFilter.IncludeType msdElementTypeTag
+    Set myElemEnum = Application.ActiveModelReference.Scan(myFilter)
+    
+    While myElemEnum.MoveNext
+        Set myTag = myElemEnum.Current
+        
+        With myTag
+        
+            If .TagSetName = "RevNo" And .TagDefinitionName = "Rev1" Then
+                GetRevInfo.Rev1 = .Value
+            End If
+            
+            If .TagSetName = "RevNo" And .TagDefinitionName = "Rev2" Then
+                GetRevInfo.Rev2 = .Value
+            End If
+
+            If .TagSetName = "RevNo" And .TagDefinitionName = "Rev3" Then
+                GetRevInfo.Rev3 = .Value
+            End If
+            
+            If .TagSetName = "Date" And .TagDefinitionName = "1_Month" Then
+                GetRevInfo.Date_MN = .Value
+            End If
+            
+            If .TagSetName = "Date" And .TagDefinitionName = "2_Day" Then
+                GetRevInfo.Date_DY = .Value
+            End If
+
+            If .TagSetName = "Date" And .TagDefinitionName = "3_Year" Then
+                GetRevInfo.Date_YR = .Value
+            End If
+            
+            If .TagSetName = "DateA" And .TagDefinitionName = "1_Month" Then
+                GetRevInfo.DateA_MN = .Value
+            End If
+            
+            If .TagSetName = "DateA" And .TagDefinitionName = "2_Day" Then
+                GetRevInfo.DateA_DY = .Value
+            End If
+
+            If .TagSetName = "DateA" And .TagDefinitionName = "3_Year" Then
+                GetRevInfo.DateA_YR = .Value
+            End If
+
+            If .TagSetName = "DateB" And .TagDefinitionName = "1_Month" Then
+                GetRevInfo.DateB_MN = .Value
+            End If
+            
+            If .TagSetName = "DateB" And .TagDefinitionName = "2_Day" Then
+                GetRevInfo.DateB_DY = .Value
+            End If
+
+            If .TagSetName = "DateB" And .TagDefinitionName = "3_Year" Then
+                GetRevInfo.DateB_YR = .Value
+            End If
+
+            If .TagSetName = "DateC" And .TagDefinitionName = "1_Month" Then
+                GetRevInfo.DateC_MN = .Value
+            End If
+            
+            If .TagSetName = "DateC" And .TagDefinitionName = "2_Day" Then
+                GetRevInfo.DateC_DY = .Value
+            End If
+
+            If .TagSetName = "DateC" And .TagDefinitionName = "3_Year" Then
+                GetRevInfo.DateC_YR = .Value
+            End If
+           
+            If .TagSetName = "RevisionDescriptions" And .TagDefinitionName = "Line1a" Then
+                GetRevInfo.Line1a = .Value
+            End If
+            
+            If .TagSetName = "RevisionDescriptions" And .TagDefinitionName = "Line1b" Then
+                GetRevInfo.line1b = .Value
+            End If
+            
+            If .TagSetName = "RevisionDescriptions" And .TagDefinitionName = "Line2a" Then
+                GetRevInfo.Line2a = .Value
+            End If
+            
+            If .TagSetName = "RevisionDescriptions" And .TagDefinitionName = "Line2b" Then
+                GetRevInfo.Line2b = .Value
+            End If
+
+            If .TagSetName = "RevisionDescriptions" And .TagDefinitionName = "Line3a" Then
+                GetRevInfo.Line3a = .Value
+            End If
+            
+            If .TagSetName = "RevisionDescriptions" And .TagDefinitionName = "Line3b" Then
+                GetRevInfo.Line3b = .Value
+            End If
+            
+            If .TagSetName = "RevisionDescriptions" And .TagDefinitionName = "Line4a" Then
+                GetRevInfo.Line4a = .Value
+            End If
+            
+            If .TagSetName = "RevisionDescriptions" And .TagDefinitionName = "Line4b" Then
+                GetRevInfo.Line4b = .Value
+            End If
+            
+            If .TagSetName = "Initals reg" And .TagDefinitionName = "1_Drawn" Then
+                GetRevInfo.Reg_DRA = .Value
+            End If
+            
+            If .TagSetName = "Initals reg" And .TagDefinitionName = "2_Designer" Then
+                GetRevInfo.Reg_DES = .Value
+            End If
+
+            If .TagSetName = "Initals reg" And .TagDefinitionName = "3_Engineer" Then
+                GetRevInfo.Reg_ENG = .Value
+            End If
+
+            If .TagSetName = "Initals reg" And .TagDefinitionName = "4_Check" Then
+                GetRevInfo.Reg_CHK = .Value
+            End If
+
+            If .TagSetName = "Initals reg" And .TagDefinitionName = "5_Approved" Then
+                GetRevInfo.Reg_APP = .Value
+            End If
+            
+            If .TagSetName = "InitialsA_1" And .TagDefinitionName = "1_Drawn" Then
+                GetRevInfo.A_DRA = .Value
+            End If
+            
+            If .TagSetName = "InitialsA_1" And .TagDefinitionName = "2_Designer" Then
+                GetRevInfo.A_DES = .Value
+            End If
+
+            If .TagSetName = "InitialsA_1" And .TagDefinitionName = "3_Engineer" Then
+                GetRevInfo.A_ENG = .Value
+            End If
+
+            If .TagSetName = "InitialsA_1" And .TagDefinitionName = "4_Check" Then
+                GetRevInfo.A_CHK = .Value
+            End If
+
+            If .TagSetName = "InitialsA_1" And .TagDefinitionName = "5_Approved" Then
+                GetRevInfo.A_APP = .Value
+            End If
+            
+
+            If .TagSetName = "InitialsB_1" And .TagDefinitionName = "1_Drawn" Then
+                GetRevInfo.B_DRA = .Value
+            End If
+            
+            If .TagSetName = "InitialsB_1" And .TagDefinitionName = "2_Designer" Then
+                GetRevInfo.B_DES = .Value
+            End If
+
+            If .TagSetName = "InitialsB_1" And .TagDefinitionName = "3_Engineer" Then
+                GetRevInfo.B_ENG = .Value
+            End If
+
+            If .TagSetName = "InitialsB_1" And .TagDefinitionName = "4_Check" Then
+                GetRevInfo.B_CHK = .Value
+            End If
+
+            If .TagSetName = "InitialsB_1" And .TagDefinitionName = "5_Approved" Then
+                GetRevInfo.B_APP = .Value
+            End If
+            
+            
+            If .TagSetName = "InitialsC_1" And .TagDefinitionName = "1_Drawn" Then
+                GetRevInfo.C_DRA = .Value
+            End If
+            
+            If .TagSetName = "InitialsC_1" And .TagDefinitionName = "2_Designer" Then
+                GetRevInfo.C_DES = .Value
+            End If
+
+            If .TagSetName = "InitialsC_1" And .TagDefinitionName = "3_Engineer" Then
+                GetRevInfo.C_ENG = .Value
+            End If
+
+            If .TagSetName = "InitialsC_1" And .TagDefinitionName = "4_Check" Then
+                GetRevInfo.C_CHK = .Value
+            End If
+
+            If .TagSetName = "InitialsC_1" And .TagDefinitionName = "5_Approved" Then
+                GetRevInfo.C_APP = .Value
+            End If
+                    
+        End With
+        
+     Wend
+     
+     GetRevInfo = GetRevInfo
+     
+End Function
+
+Sub UpdateRevInfo(TagSetName As String, TagDefName As String, TagValue As String)
+
+    Dim newvalue As String
+    Dim myTag As TagElement
+    Dim myElemEnum As ElementEnumerator
+    Dim myFilter As New ElementScanCriteria
+    myFilter.ExcludeAllTypes
+    myFilter.IncludeType msdElementTypeTag
+    Set myElemEnum = Application.ActiveModelReference.Scan(myFilter)
+    
+    While myElemEnum.MoveNext
+        Set myTag = myElemEnum.Current
+        
+        If myTag.TagSetName = TagSetName And myTag.TagDefinitionName = TagDefName Then
+            myTag.Value = TagValue
+            myTag.Rewrite
+        End If
+     Wend
+End Sub
+

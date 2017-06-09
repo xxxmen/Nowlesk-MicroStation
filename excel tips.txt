@@ -1,0 +1,194 @@
+
+
+Join Date:Jun 2002
+Location:Houston, TX
+Posts:126 VBA code to switch between 2 workbooks 
+I have written VBA code to open a separate file and then copy back and forth between the two files. However, when I recorded, I got commands like the following:
+
+Windows("DestinationFile.XLS").Activate
+then the copy/paste stuff then
+Windows("SourceFile.XLS").Activate
+
+The problem is that my "SourceFile" may have a different filename. I need the code to be robust enough to handle the possibility of a different filename. I tried the following, but it did not work:
+
+Dim MarketProfileName As String
+MarketProfileName = ThisWorkbook.FullName
+Windows("DestinationFile.XLS").Activate
+then the copy/paste stuff then
+Windows(MarketProfileName).Activate
+
+Thanks for your help. Share 
+Share this post on
+DiggDel.icio.usTechnoratiTwitter  Reply With Quote .
+--------------------------------------------------------------------------------
+Apr 18th, 2003, 12:42 PM #2 TommyGun  
+MrExcel MVP 
+ 
+--------------------------------------------------------------------------------
+
+Join Date:Dec 2002
+Location:Clear Lake, TX
+Posts:4,202 
+Well here is one way to copy from one workbook to another. It prompts the user for the file name, and then pastes a specified range into the activesheet of the activeworkbook.
+
+Feel free to post any questions on how to adapt this to your needs.
+
+
+Code:
+
+
+Sub CopyBetween()
+
+Dim shtOrigin As Worksheet
+Dim shtDestin As Worksheet
+Dim strFile As String
+
+Application.ScreenUpdating = False
+
+Set shtDestin = ActiveWorkbook.ActiveSheet
+
+strFile = Application.GetOpenFilename
+
+If CStr(strFile) <> "False" Then
+
+    Set shtOrigin = Workbooks.Open(strFile).Sheets(1)
+
+    shtOrigin.Range("A1:L20").Copy Destination:=shtDestin.Range("A1")
+
+    Application.CutCopyMode = False
+    
+    ActiveWorkbook.Close False
+
+    Set shtOrigin = Nothing
+
+Else
+
+    Application.ScreenUpdating = True
+
+    MsgBox "No valid file selected", vbOKOnly + vbInformation, "Copy Error"
+
+End If
+
+Set shtDestin = Nothing
+
+Application.ScreenUpdating = True
+
+End Sub
+
+Share 
+Share this post on
+DiggDel.icio.usTechnoratiTwitter  Reply With Quote .
+--------------------------------------------------------------------------------
+Apr 18th, 2003, 12:51 PM #3 Russell Hauf  
+MrExcel MVP 
+ 
+--------------------------------------------------------------------------------
+
+Join Date:Feb 2002
+Location:Beaverton, OR USA
+Posts:1,401 
+Also, you can always refer to the "Source" file (as long as it is the workbook with the code in it) as ThisWorkbook:
+
+ThisWorkbook.Activate Share 
+Share this post on
+DiggDel.icio.usTechnoratiTwitter-Russell  Reply With Quote .
+--------------------------------------------------------------------------------
+Apr 18th, 2003, 12:51 PM #4 Nimrod  
+MrExcel MVP 
+
+--------------------------------------------------------------------------------
+
+Join Date:Apr 2002
+Location:Vancouver BC , Canada
+Posts:6,259 
+If the code is in one of the two workbooks then things become very easy.
+
+1. Have your book with the code in it open
+2. Have the "Other" work book open and activated.
+3. Activate the macro while "the Other " work book is the Activeone.
+
+IN YOUR CODE:
+refer to the Workbook with the Code in it as "ThisWorkBook". ThisWorkBook always refers to the book where the code is located.
+Refer to the "other" work book ast the "ActiveWorkBook"
+
+
+CODE EXAMPLE
+ThisWorkBook.Sheets("Sheet1").Range("A1").value = ActiveWorkBook.Sheets("Sheet1").Range("b1").value 
+
+
+
+By doing this the name of either workbook is not required nor do you have to switch back and forth between them Share 
+Share this post on
+DiggDel.icio.usTechnoratiTwitter
+<MARQUEE>...........Never be afraid to try something new. Remember, amateurs built the ark, professionals built the Titanic...............The easiest thing to find is fault, don't be easy !.. --Anonymous--...</marquee>  Reply With Quote .
+--------------------------------------------------------------------------------
+Apr 18th, 2003, 12:59 PM #5 Nimrod  
+MrExcel MVP 
+
+--------------------------------------------------------------------------------
+
+Join Date:Apr 2002
+Location:Vancouver BC , Canada
+Posts:6,259 
+This code copies information from the book with the VBA Code to the ActiveWorkBook
+
+Sub CopyPasteBetween2Books()
+ThisWorkbook.Sheets("Sheet1").Range("A1:E3").Copy
+ActiveSheet.Paste Destination:=Worksheets("Sheet1").Range("A1:E3")
+Application.CutCopyMode = False
+End Sub 
+
+Share 
+Share this post on
+DiggDel.icio.usTechnoratiTwitter
+<MARQUEE>...........Never be afraid to try something new. Remember, amateurs built the ark, professionals built the Titanic...............The easiest thing to find is fault, don't be easy !.. --Anonymous--...</marquee>  Reply With Quote .
+--------------------------------------------------------------------------------
+Apr 18th, 2003, 03:01 PM #6 u742884  
+Board Regular 
+
+--------------------------------------------------------------------------------
+
+Join Date:Jun 2002
+Location:Houston, TX
+Posts:126 Thanks! 
+Referring to it as ThisWorkbook worked great. Thanks. I knew it was something simple that I was missing. Share 
+Share this post on
+DiggDel.icio.usTechnoratiTwitter  Reply With Quote .
+--------------------------------------------------------------------------------
+Jun 4th, 2013, 04:49 PM #7 MiguelPmcg  
+New Member 
+
+--------------------------------------------------------------------------------
+
+Join Date:Jun 2013
+Posts:2 Re: VBA code to switch between 2 workbooks 
+How i get the "Other" activated?
+I don't get it Share 
+Share this post on
+DiggDel.icio.usTechnoratiTwitter  Reply With Quote .
+--------------------------------------------------------------------------------
+« Previous Thread | Next Thread » Like this thread? Share it with others
+Like this thread? Share it with others
+ Twitter  Linked In  Google  Reddit  StumbleUpon . Posting Permissions 
+You may not post new threads
+You may not post replies
+You may not post attachments
+You may not edit your posts
+ 
+BB code is On
+Smilies are On
+[IMG] code is On
+[VIDEO] code is On
+HTML code is On
+Trackbacks are On
+Pingbacks are On
+Refbacks are On
+Forum Rules
+.
+
+ 
+
+
+   -- vB4 Default Style   -- Default Mobile Style  Contact UsAsk Mr. Excel - Tips and Solutions for ExcelPrivacy StatementTerms of ServiceTop.All times are GMT -4. The time now is 03:54 PM.
+Powered by vBulletin® Version 4.2.0 
+Copyright © 2014 vBulletin Solutions, Inc. All rights reserved. All contents Copyright 1998-2014 by MrExcel Consulting. 

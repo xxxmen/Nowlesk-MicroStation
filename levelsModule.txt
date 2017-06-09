@@ -1,0 +1,86 @@
+Option Base 1
+Option Explicit
+Option Compare Text   'This fixes issue with MIXED CASE levels --> Dimensions & DIMENSIONS
+
+Sub test_FoundAllLevels()
+  Dim rMsg As String
+  Dim Critical As Boolean
+  Critical = False
+  rMsg = CheckLevels(Critical)
+  
+    If rMsg <> "" Then
+       MsgBox rMsg  'LEVELS PROBLEM
+      Else
+         'do nothing2121
+    End If
+  
+End Sub
+Function CheckLevels() As String  'return True if all levels found
+
+  Dim myLevel As Level
+  Dim LevelCounter As Integer
+  Dim ICountLevels As Integer
+  Dim Icount As Integer
+  Dim ICountChange As Boolean
+  
+  
+  Dim strLevel(23) As String
+  'LEVELS ARE CASE SENSITIVE
+  strLevel(1) = "Text"
+  strLevel(2) = "Property line"
+  strLevel(3) = "Backcircle"
+  strLevel(4) = "Border-titleblock"
+  strLevel(5) = "Dimensions"
+  strLevel(6) = "New or Revisions"
+  strLevel(7) = "Baselines"
+  strLevel(8) = "Fence"
+  strLevel(9) = "Removal or Abandoned"
+  strLevel(10) = "Contours 1 ft"
+  strLevel(11) = "Contours 5 ft"
+  strLevel(12) = "Liner Seal to Concrete"
+  strLevel(13) = "Liner Extent"
+  strLevel(14) = "Notes and References"
+  strLevel(15) = "Material Item"
+  strLevel(16) = "Vendor"
+  strLevel(17) = "Design Master(Red)"
+  strLevel(18) = "Existing"
+  strLevel(19) = "Mark List"
+  strLevel(20) = "Default"
+  strLevel(21) = "Fence Corners"
+  strLevel(22) = "Centerlines"
+  strLevel(23) = "Foundations"
+  
+  Icount = 1
+  ICountLevels = 0
+  
+  'Go thru all levels
+  For Each myLevel In ActiveDesignFile.Levels
+  
+        'Go thru all levels in strLevel() array and count any that match
+        For Icount = 1 To UBound(strLevel)
+          If myLevel.Name = strLevel(Icount) Then
+             'Debug.Print myLevel.Name
+             ICountLevels = ICountLevels + 1
+             Exit For
+          Else
+             'do nothing
+          End If
+        Next Icount
+   Next
+   
+  If ICountLevels = UBound(strLevel) Then
+     'all substation levels found, but check for excess levels
+         If ActiveDesignFile.Levels.count > (UBound(strLevel) + 11) Then
+             CheckLevels = " EXCESS LEVELS! "
+         End If
+      Else
+         CheckLevels = " MISSING LEVELS! "
+         
+         If ActiveDesignFile.Levels.count > (UBound(strLevel) + 11) Then
+             CheckLevels = " MISSING LEVELS & EXCESS LEVELS! "
+         End If
+  End If
+  
+      
+End Function
+
